@@ -5,6 +5,43 @@
 
 THEME_NAME=$1
 
+# Sync Mako notification theme colors
+python3 -c '
+import os, re, subprocess
+home = os.path.expanduser("~")
+theme_name = "'"$THEME_NAME"'"
+colors_path = os.path.join(home, ".config/omarchy/themes", theme_name, "colors.toml")
+if not os.path.exists(colors_path):
+    colors_path = os.path.join(home, ".config/omarchy/current/theme/colors.toml")
+
+if os.path.exists(colors_path):
+    colors = {}
+    with open(colors_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                key, val = line.split("=", 1)
+                colors[key.strip()] = val.strip().replace("\"", "").replace("\u0027", "")
+
+    bg = colors.get("background")
+    fg = colors.get("foreground")
+    accent = colors.get("accent", fg)
+
+    if bg and fg:
+        mako_config = os.path.join(home, ".config/mako/config")
+        if os.path.exists(mako_config):
+            with open(mako_config, "r") as f:
+                content = f.read()
+            content = re.sub(r"^text-color=.*$", f"text-color={fg}", content, flags=re.MULTILINE)
+            content = re.sub(r"^border-color=.*$", f"border-color={accent}", content, flags=re.MULTILINE)
+            content = re.sub(r"^background-color=.*$", f"background-color={bg}", content, flags=re.MULTILINE)
+            with open(mako_config, "w") as f:
+                f.write(content)
+            subprocess.run(["makoctl", "reload"], capture_output=True)
+'
+
 # Sync Aerion theme with Omarchy theme
 AERION_DB="$HOME/.local/share/aerion/aerion.db"
 if [[ -f "$AERION_DB" ]]; then
