@@ -1,0 +1,31 @@
+#!/bin/bash
+# Sample Omarchy theme-set hook script for Aerion.
+# Copy this script (or merge its contents) into ~/.config/omarchy/hooks/theme-set
+# and make sure it is executable (chmod +x).
+
+THEME_NAME=$1
+
+# Sync Aerion theme with Omarchy theme
+AERION_DB="$HOME/.local/share/aerion/aerion.db"
+if [[ -f "$AERION_DB" ]]; then
+  # Convert theme name to lowercase-kebab format to match Aerion theme IDs
+  AERION_THEME=$(echo "$THEME_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')
+
+  # Handle special theme mappings for multi-variant themes
+  if [[ "$AERION_THEME" == "nord" ]]; then
+    if [[ -f "$HOME/.config/omarchy/current/theme/light.mode" ]]; then
+      AERION_THEME="nord-light"
+    else
+      AERION_THEME="nord-dark"
+    fi
+  elif [[ "$AERION_THEME" == "catppuccin" ]]; then
+    if [[ -f "$HOME/.config/omarchy/current/theme/light.mode" ]]; then
+      AERION_THEME="catppuccin-latte"
+    else
+      AERION_THEME="catppuccin-macchiato"
+    fi
+  fi
+
+  # Call the Aerion CLI to change the theme dynamically
+  aerion --theme-change "$AERION_THEME" || true
+fi
