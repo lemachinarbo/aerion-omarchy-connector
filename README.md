@@ -1,20 +1,25 @@
 # Omarchy Integration for Aerion
 
-This directory contains integration assets to enable seamless live theming between the Omarchy desktop theme switcher and Aerion.
+Assets to enable real-time theme synchronization between the Omarchy desktop environment and [Aerion](https://github.com/hkdb/aerion).
 
-## Contents
+## Setup
 
-1. **`generate_themes.py`**: A helper script that reads colors from your local Omarchy configuration (`~/.config/omarchy/themes/`) and automatically builds the static `.css` stylesheets, registers them in Go (`internal/settings/store.go`), and updates Svelte settings (`settings.svelte.ts`/`GeneralTab.svelte`).
-2. **`theme-set.sample`**: A sample hook script that handles automatic mappings (such as converting `nord` $\rightarrow$ `nord-dark`/`nord-light` based on the system's `light.mode` state) and triggers theme-changing command on running Aerion instances.
+### Step 1: Install Aerion
+Since live theming support is in progress for upstream, you must build Aerion from the custom fork containing these changes:
 
-## How to Set Up Live Theming
+```bash
+git clone https://github.com/lemachinarbo/aerion.git
+cd aerion
+# Follow Aerion build instructions to compile and install
+```
 
-1. **Enable the Hook**:
-   Copy the contents of `theme-set.sample` into your local Omarchy hooks:
-   ```bash
-   cat theme-set.sample >> ~/.config/omarchy/hooks/theme-set
-   chmod +x ~/.config/omarchy/hooks/theme-set
-   ```
+### Step 2: Enable the Hook (Quick Setup)
+Run this one-liner to clone the connector and enable the theme sync hook:
+```bash
+git clone https://github.com/lemachinarbo/aerion-omarchy-connector.git && cd aerion-omarchy-connector && ./setup.sh
+```
 
-2. **Test Theme Synchronization**:
-   Change your Omarchy theme (e.g., to `Kanagawa` or `Everforest`). Aerion will automatically and instantly update its UI to match!
+## Files
+
+* **`theme-set.sample`**: A sample hook script that maps Omarchy themes to Aerion equivalents (e.g., handling dark/light variants for Nord and Catppuccin) and sends the update to running Aerion instances. It also updates `mako` notification colors to match the active theme.
+* **`generate_themes.py`**: A helper script to generate CSS files, register new themes in Go (`internal/settings/store.go`), and expose them in Svelte (`settings.svelte.ts`/`GeneralTab.svelte`).
