@@ -2,6 +2,12 @@
 
 Assets to enable real-time theme synchronization between the Omarchy desktop environment and [Aerion](https://github.com/hkdb/aerion).
 
+
+
+https://github.com/user-attachments/assets/18d12c22-135a-49a4-bb18-0dbcee25eb34
+
+
+
 ## Setup
 
 ### Step 1: Install Aerion
